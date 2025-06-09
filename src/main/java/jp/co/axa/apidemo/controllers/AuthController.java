@@ -16,6 +16,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * REST Controller for user authentication and registration.
+ * These endpoints are publicly accessible (no authentication required).
+ */
 @Api(tags = "Authentication", description = "APIs for user authentication and registration")
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -33,6 +37,13 @@ public class AuthController {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
+    /**
+     * Authenticates a user and returns a JWT token.
+     * The token should be included in the Authorization header for subsequent requests.
+     *
+     * @param loginRequest The login credentials (username and password)
+     * @return JWT token if authentication is successful
+     */
     @ApiOperation(value = "User login", notes = "Authenticates a user and returns a JWT token")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Successfully authenticated and returned JWT token"),
@@ -58,6 +69,13 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Registers a new user in the system.
+     * The user will be assigned the default "USER" role.
+     *
+     * @param registerRequest The registration details (username and password)
+     * @return Success message if registration is successful
+     */
     @ApiOperation(value = "User registration", notes = "Registers a new user in the system")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Successfully registered the user"),
