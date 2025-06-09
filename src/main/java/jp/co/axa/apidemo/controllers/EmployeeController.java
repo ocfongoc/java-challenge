@@ -1,12 +1,15 @@
 package jp.co.axa.apidemo.controllers;
 
+import io.swagger.annotations.*;
 import jp.co.axa.apidemo.entities.Employee;
 import jp.co.axa.apidemo.services.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Api(tags = "Employee Management", description = "APIs for managing employees")
 @RestController
 @RequestMapping("/api/v1")
 public class EmployeeController {
@@ -18,37 +21,74 @@ public class EmployeeController {
         this.employeeService = employeeService;
     }
 
+    @ApiOperation(value = "Get all employees", notes = "Returns a list of all employees. Response is cached for better performance.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Successfully retrieved all employees"),
+        @ApiResponse(code = 403, message = "Access denied - JWT token is missing or invalid")
+    })
     @GetMapping("/employees")
-    public List<Employee> getEmployees() {
+    public ResponseEntity<List<Employee>> getEmployees() {
         List<Employee> employees = employeeService.retrieveEmployees();
-        return employees;
+        return ResponseEntity.ok(employees);
     }
 
+    @ApiOperation(value = "Get employee by ID", notes = "Returns a single employee by their ID. Response is cached for better performance.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Successfully retrieved the employee"),
+        @ApiResponse(code = 403, message = "Access denied - JWT token is missing or invalid"),
+        @ApiResponse(code = 404, message = "Employee not found")
+    })
     @GetMapping("/employees/{employeeId}")
-    public Employee getEmployee(@PathVariable(name="employeeId")Long employeeId) {
-        return employeeService.getEmployee(employeeId);
+    public ResponseEntity<Employee> getEmployee(
+            @ApiParam(value = "ID of the employee to retrieve", required = true)
+            @PathVariable(name="employeeId") Long employeeId) {
+        Employee employee = employeeService.getEmployee(employeeId);
+        return employee != null ? ResponseEntity.ok(employee) : ResponseEntity.notFound().build();
     }
 
+    @ApiOperation(value = "Create a new employee", notes = "Creates a new employee in the system")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Successfully created the employee"),
+        @ApiResponse(code = 403, message = "Access denied - JWT token is missing or invalid")
+    })
     @PostMapping("/employees")
-    public void saveEmployee(Employee employee){
+    public ResponseEntity<Void> saveEmployee(
+            @ApiParam(value = "Employee object to be created", required = true)
+            @RequestBody Employee employee) {
         employeeService.saveEmployee(employee);
-        System.out.println("Employee Saved Successfully");
+        return ResponseEntity.ok().build();
     }
 
+    @ApiOperation(value = "Delete an employee", notes = "Deletes an employee from the system")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Successfully deleted the employee"),
+        @ApiResponse(code = 403, message = "Access denied - JWT token is missing or invalid")
+    })
     @DeleteMapping("/employees/{employeeId}")
-    public void deleteEmployee(@PathVariable(name="employeeId")Long employeeId){
+    public ResponseEntity<Void> deleteEmployee(
+            @ApiParam(value = "ID of the employee to delete", required = true)
+            @PathVariable(name="employeeId") Long employeeId) {
         employeeService.deleteEmployee(employeeId);
-        System.out.println("Employee Deleted Successfully");
+        return ResponseEntity.ok().build();
     }
 
+    @ApiOperation(value = "Update an employee", notes = "Updates an existing employee's information")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Successfully updated the employee"),
+        @ApiResponse(code = 403, message = "Access denied - JWT token is missing or invalid"),
+        @ApiResponse(code = 404, message = "Employee not found")
+    })
     @PutMapping("/employees/{employeeId}")
-    public void updateEmployee(@RequestBody Employee employee,
-                               @PathVariable(name="employeeId")Long employeeId){
-        Employee emp = employeeService.getEmployee(employeeId);
-        if(emp != null){
+    public ResponseEntity<Void> updateEmployee(
+            @ApiParam(value = "Updated employee object", required = true)
+            @RequestBody Employee employee,
+            @ApiParam(value = "ID of the employee to update", required = true)
+            @PathVariable(name="employeeId") Long employeeId) {
+        Employee existingEmployee = employeeService.getEmployee(employeeId);
+        if (existingEmployee != null) {
             employeeService.updateEmployee(employee);
+            return ResponseEntity.ok().build();
         }
-
+        return ResponseEntity.notFound().build();
     }
-
 }

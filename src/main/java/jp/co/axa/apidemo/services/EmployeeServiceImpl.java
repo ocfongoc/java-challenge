@@ -31,8 +31,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeRepository.findById(employeeId).orElse(null);
     }
 
-    @CacheEvict(value = "employees", allEntries = true)
-    @CachePut(value = "employee", key = "#employee.id")
+    @CacheEvict(value = {"employees", "employee"}, allEntries = true)
     public void saveEmployee(Employee employee) {
         employeeRepository.save(employee);
     }
@@ -42,8 +41,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeRepository.deleteById(employeeId);
     }
 
-    @CacheEvict(value = "employees", allEntries = true)
-    @CachePut(value = "employee", key = "#employee.id")
+    @CacheEvict(value = {"employees", "employee"}, allEntries = true)
     public void updateEmployee(Employee employee) {
         employeeRepository.save(employee);
     }

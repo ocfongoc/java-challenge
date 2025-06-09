@@ -49,7 +49,14 @@ public class SwaggerConfig {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("Employee Management API")
-                .description("API for managing employees with JWT authentication")
+                .description("RESTful API for managing employees with JWT authentication.\n\n" +
+            
+                        "## API Usage\n" +
+                        "- Register a new user using the `/api/v1/auth/register` endpoint\n" +
+                        "- Login to get JWT token using the `/api/v1/auth/login` endpoint\n" +
+                        "- You have add \"Bearer \" before the token in the Authorization header\n" +
+                        "- Use the JWT token in the Authorization header for protected endpoints\n\n" 
+                       )
                 .version("1.0")
                 .build();
     }

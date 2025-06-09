@@ -1,6 +1,9 @@
 package jp.co.axa.apidemo.controllers;
 
+import io.swagger.annotations.*;
 import jp.co.axa.apidemo.entities.User;
+import jp.co.axa.apidemo.models.AuthRequest;
+import jp.co.axa.apidemo.models.AuthResponse;
 import jp.co.axa.apidemo.repositories.UserRepository;
 import jp.co.axa.apidemo.security.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
+@Api(tags = "Authentication", description = "APIs for user authentication and registration")
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
@@ -32,12 +33,19 @@ public class AuthController {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
+    @ApiOperation(value = "User login", notes = "Authenticates a user and returns a JWT token")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Successfully authenticated and returned JWT token"),
+        @ApiResponse(code = 401, message = "Invalid username or password")
+    })
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> loginRequest) {
+    public ResponseEntity<AuthResponse> login(
+            @ApiParam(value = "Login credentials", required = true)
+            @RequestBody AuthRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginRequest.get("username"),
-                        loginRequest.get("password")
+                        loginRequest.getUsername(),
+                        loginRequest.getPassword()
                 )
         );
 
@@ -45,20 +53,27 @@ public class AuthController {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String jwt = jwtTokenUtil.generateToken(userDetails);
 
-        Map<String, String> response = new HashMap<>();
-        response.put("token", jwt);
+        AuthResponse response = new AuthResponse();
+        response.setToken(jwt);
         return ResponseEntity.ok(response);
     }
 
+    @ApiOperation(value = "User registration", notes = "Registers a new user in the system")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Successfully registered the user"),
+        @ApiResponse(code = 400, message = "Username is already taken")
+    })
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody Map<String, String> registerRequest) {
-        if (userRepository.existsByUsername(registerRequest.get("username"))) {
+    public ResponseEntity<String> register(
+            @ApiParam(value = "Registration details", required = true)
+            @RequestBody AuthRequest registerRequest) {
+        if (userRepository.existsByUsername(registerRequest.getUsername())) {
             return ResponseEntity.badRequest().body("Username is already taken!");
         }
 
         User user = new User();
-        user.setUsername(registerRequest.get("username"));
-        user.setPassword(passwordEncoder.encode(registerRequest.get("password")));
+        user.setUsername(registerRequest.getUsername());
+        user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         user.setRole("USER"); // Default role
 
         userRepository.save(user);
