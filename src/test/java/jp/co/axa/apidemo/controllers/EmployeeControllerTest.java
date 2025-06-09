@@ -119,7 +119,7 @@ public class EmployeeControllerTest {
         mockMvc.perform(put("/api/v1/employees/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"name\":\"John Updated\",\"salary\":60000,\"department\":\"HR\"}"))
-                .andExpect(status().isOk());
+                .andExpect(status().isNotFound());
 
         verify(employeeService, times(1)).getEmployee(1L);
         verify(employeeService, never()).updateEmployee(any(Employee.class));

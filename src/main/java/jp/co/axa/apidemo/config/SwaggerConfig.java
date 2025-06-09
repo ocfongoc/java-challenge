@@ -54,8 +54,9 @@ public class SwaggerConfig {
                         "## API Usage\n" +
                         "- Register a new user using the `/api/v1/auth/register` endpoint\n" +
                         "- Login to get JWT token using the `/api/v1/auth/login` endpoint\n" +
-                        "- You have add \"Bearer \" before the token in the Authorization header\n" +
-                        "- Use the JWT token in the Authorization header for protected endpoints\n\n" 
+                        "- Use the JWT token in the Authorization header for protected endpoints\n"+
+                        "- You have to add \"Bearer \" before the token in the Authorization header\n"+
+                        "- You can now call the protected Employee Management APIs"
                        )
                 .version("1.0")
                 .build();

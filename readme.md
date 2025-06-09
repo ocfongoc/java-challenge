@@ -50,3 +50,35 @@ Please let us know more about your Java experience in a few sentences. For examp
 - I have 3 years experience in Java and I started to use Spring Boot from last year
 - I'm a beginner and just recently learned Spring Boot
 - I know Spring Boot very well and have been using it for many years
+
+### Developer Experience
+
+I have 6 years of experience with Java and 4 years experience Spring Boot as Full Stack Developer. However, I am actually more frontend focused.
+
+### Project Improvements Made
+
+1. **JWT Authentication**
+   - Implemented JWT token-based security
+   - Protected employee endpoints
+   - Added login endpoint for token generation
+
+2. **Caching**
+   - Added caching for database operations
+   - Implemented cache eviction policies
+
+3. **Testing**
+   - Added unit tests for controllers 
+   - Added integration tests for services
+
+4. **Documentation**
+   - Enhanced Swagger documentation
+   - Added detailed API response codes
+   - Improved code comments and documentation
+
+### Futher Considerations on Improvements
+
+If given more time, I would implement:
+- Refresh token mechanism
+- Rate limiting
+- Pagination for list endpoints
+- Enhanced monitoring and logging
